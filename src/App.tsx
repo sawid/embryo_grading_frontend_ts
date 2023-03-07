@@ -8,38 +8,43 @@ import { currentUser } from './components/function.component/authen.function';
 import { useRecoilState } from 'recoil';
 import UserRoute from './components/route/UserRoute';
 import { useDispatch } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 
   const dispatch = useDispatch();
-  
+
   const idtoken = localStorage.token;
   if (idtoken) {
     currentUser(idtoken)
-    .then(res => {
-      console.log(res.data);
-      dispatch({
-        type:'LOGIN',
-        payload: {
-          token: idtoken,
-          username: res.data.username,
-        }
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    })
+      .then(res => {
+        console.log(res.data);
+        dispatch({
+          type: 'LOGIN',
+          payload: {
+            token: idtoken,
+            username: res.data.username,
+          }
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   return (
-    <Router>
-      <div>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/matchdata" element={<UserRoute><MatchData /></UserRoute>} />
-        </Routes>
-      </div>
-    </Router>
+    <div className="wrapper">
+      <ToastContainer closeButton={false} />
+      <Router>
+        <div>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/matchdata" element={<UserRoute><MatchData /></UserRoute>} />
+          </Routes>
+        </div>
+      </Router>
+    </div>
   );
 }
 

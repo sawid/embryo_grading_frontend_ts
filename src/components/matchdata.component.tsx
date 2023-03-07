@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from 'react-bootstrap'
+import { Button, Col, Container, Row } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilValue, useResetRecoilState } from 'recoil'
@@ -20,7 +20,17 @@ const MatchData = () => {
     }
 
     return (
-        <div><Button variant="primary" onClick={logout}>Primary</Button>{user.token}</div>
+        <div>
+            <Container fluid className='p-5'>
+                <Row className="justify-content-center text-center">
+                    <Col md="auto" sm="auto" xs="auto">
+                        <h1>เริ่มโดยการกดที่ปุ่มถ่ายภาพ 📷</h1>
+                    </Col>
+                </Row>
+                <input type="file" accept="image/*" capture="environment"></input>
+            </Container>
+            {/* <Button variant="primary" onClick={logout}>Primary</Button>{user.token} */}
+        </div>
     )
 }
 

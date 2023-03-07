@@ -6,6 +6,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { login } from './function.component/authen.function';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const Home = () => {
 
@@ -38,11 +39,27 @@ const Home = () => {
                   username: "ผู้ใช้ 1",
                 }
               });
+              toast.success('เข้าสู่ระบบสำเร็จ !', {
+                position: "top-right",
+                autoClose: 1000,
+                hideProgressBar: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
             localStorage.setItem("token", res.data);
             navigate('/matchdata');
         })
         .catch((err:any) => {
             console.log(err.response.data);
+            toast.error('ไม่สามารถเข้าสู่ระบบได้', {
+                position: "top-right",
+                autoClose: 1000,
+                hideProgressBar: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
         });
     }
 
