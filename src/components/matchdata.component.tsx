@@ -28,6 +28,7 @@ const MatchData = () => {
                     </Col>
                 </Row>
                 <input type="file" accept="image/*" capture="environment"></input>
+                <Button variant="primary" onClick={logout}>Logout</Button>
             </Container>
             {/* <Button variant="primary" onClick={logout}>Primary</Button>{user.token} */}
         </div>
