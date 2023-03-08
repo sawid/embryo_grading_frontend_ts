@@ -118,7 +118,7 @@ const MatchData = () => {
             <Container fluid className='p-5'>
                 <Row className="justify-content-center text-center">
                     <Col md="auto" sm="auto" xs="auto">
-                        <h1>Liverpool 7 - 0 Manchester United</h1>
+                        {/* <h1>link physical and image file</h1> */}
                     </Col>
                 </Row>
                 <Row className="justify-content-center text-center">
@@ -126,7 +126,7 @@ const MatchData = () => {
                         <Alert key={"success"} variant={"success"}>
                             <Form >
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Label>รหัสของรูป (Case ID)</Form.Label>
+                                    <Form.Label>รหัสของรูป (Case ID) ทดลอง  21435643</Form.Label>
                                     <Form.Control name='imageId' value={textBoxValue.imageId} type="number" placeholder="รหัส" disabled={statusId} onChange={handleChangeImageId} />
                                 </Form.Group>
 
@@ -143,11 +143,11 @@ const MatchData = () => {
                             <Form >
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <Form.Label>ชื่อของรูปใน Folder <br></br> ตามด้วยนามสกุลไฟล์ (เช่น day5.jpg) ตัวเล็ก-ใหญ่สำคัญ​ !!!</Form.Label>
-                                    <Form.Control name='imageName' type="string" placeholder="ชื่อ" value={textBoxValue.imageName} disabled={statusState2Id} onChange={handleChangeImageId} required/>
+                                    <Form.Control name='imageName' type="string" placeholder="ชื่อ" value={textBoxValue.imageName} disabled={statusState2Id} onChange={handleChangeImageId} required />
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <Form.Label>Grade</Form.Label>
-                                    <Form.Control name='grade' type="number" placeholder="เกรดเด้อ" value={textBoxValue.grade} maxLength={3} disabled={statusState2Id} onChange={handleChangeImageId} required/>
+                                    <Form.Control name='grade' type="number" placeholder="เกรดเด้อ" value={textBoxValue.grade} maxLength={3} disabled={statusState2Id} onChange={handleChangeImageId} required />
                                 </Form.Group>
 
                                 <Button variant="primary" type="submit" disabled={statusState2Id} onClick={matchData}>
@@ -157,8 +157,12 @@ const MatchData = () => {
                         </Alert>
                     </Col>
                 </Row>
-                <input type="file" accept="image/*" capture="environment"></input>
-                <Button variant="primary" onClick={logout}>Logout</Button>
+                <Row className="justify-content-center text-center">
+                    <Col md="auto" sm="auto" xs="auto">
+                        <Button variant="primary" onClick={logout}>Logout</Button>
+                    </Col>
+                </Row>
+                {/* <input type="file" accept="image/*" capture="environment"></input> */}
             </Container>
             {/* <Button variant="primary" onClick={logout}>Primary</Button>{user.token} */}
         </div>
