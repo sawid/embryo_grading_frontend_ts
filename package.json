@@ -22,6 +22,7 @@
     "recoil": "^0.7.7",
     "redux": "^4.2.1",
     "redux-devtools-extension": "^2.13.9",
+    "tesseract.js": "^4.0.2",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },

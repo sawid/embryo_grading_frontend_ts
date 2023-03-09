@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, Button, Col, Container, Form, Row } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Tesseract, { createWorker } from 'tesseract.js';
 import { isImageIdIsValid, matchdata } from './function.component/matchdata.function';
 
 const MatchData = () => {
@@ -10,6 +11,12 @@ const MatchData = () => {
     const { user } = useSelector((state: any) => ({ ...state }));
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const worker = createWorker({
+        logger: (m) => {
+          console.log(m);
+        },
+      });
 
     const [statusId, setStatusId] = useState(false);
 
@@ -20,6 +27,10 @@ const MatchData = () => {
         imageName: "",
         grade: "",
     });
+
+    const [imagePath, setImagePath] = useState<any>('');
+
+    const [ocr, setOcr] = useState("");
 
     const handleChangeImageId = (e: any) => {
         if (e.target.name === "grade" && e.target.value.length > 3) {
@@ -113,6 +124,41 @@ const MatchData = () => {
             })
     }
 
+    const handleChangeImageIdUploadOCR = async (e: any) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const imageDataUri = reader.result;
+            console.log({ imageDataUri });
+            setImagePath(imageDataUri);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    useEffect(() => {
+        convertImageToText();
+      }, [imagePath]);
+
+    const convertImageToText = async () => {
+        if (!imagePath) return;
+        await (await worker).load();
+        await (await worker).loadLanguage("eng");
+        await (await worker).initialize("eng");
+        await (await worker).setParameters({
+            tessedit_char_whitelist: '0123456789',
+            preserve_interword_spaces: '0',
+          });
+        setTextBoxValue(prevState => ({ ...prevState, imageId: "กำลังประมวลผล" }))
+        setStatusId(true)
+        const {
+          data: { text },
+        } = await (await worker).recognize(imagePath);
+        setTextBoxValue(prevState => ({ ...prevState, imageId: text }))
+        setStatusId(false)
+      };
+
+
     return (
         <div>
             <Container fluid className='p-5'>
@@ -126,8 +172,11 @@ const MatchData = () => {
                         <Alert key={"success"} variant={"success"}>
                             <Form >
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Label>รหัสของรูป (Case ID) ทดลอง  21435643</Form.Label>
-                                    <Form.Control name='imageId' value={textBoxValue.imageId} type="number" placeholder="รหัส" disabled={statusId} onChange={handleChangeImageId} />
+                                    <Form.Label>รหัสของรูป (Case ID) ทดลอง  21435643 {ocr}</Form.Label>
+                                    <Form.Control name='imageId' value={textBoxValue.imageId} type="text" placeholder="รหัส" disabled={statusId} onChange={handleChangeImageId} />
+                                </Form.Group>
+                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                    <Form.Control type="file" accept='.jpg,.png,.heic' onChange={handleChangeImageIdUploadOCR} />
                                 </Form.Group>
 
                                 <Button variant="primary" type="submit" disabled={statusId} onClick={checkImageIdIsValid}>
