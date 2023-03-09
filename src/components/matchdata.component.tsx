@@ -159,6 +159,7 @@ const MatchData = () => {
             data: { text },
         } = await (await worker).recognize(imagePath);
         setTextBoxValue(prevState => ({ ...prevState, imageId: text }))
+        setImagePath("")
         setStatusId(false)
     };
 
@@ -183,7 +184,7 @@ const MatchData = () => {
                                     <Form.Control name='imageId' value={textBoxValue.imageId} type="text" placeholder="รหัส" disabled={statusId} onChange={handleChangeImageId} />
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Control type="file" accept='.jpg,.png,.heic' onChange={handleChangeImageIdUploadOCR} />
+                                    <Form.Control type="file" accept='.jpg,.png' onChange={handleChangeImageIdUploadOCR} />
                                 </Form.Group>
 
                                 <Button variant="primary" type="submit" disabled={statusId} onClick={checkImageIdIsValid}>
