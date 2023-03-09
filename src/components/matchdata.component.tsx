@@ -14,9 +14,9 @@ const MatchData = () => {
 
     const worker = createWorker({
         logger: (m) => {
-          console.log(m);
+            //   console.log(m);
         },
-      });
+    });
 
     const [statusId, setStatusId] = useState(false);
 
@@ -127,6 +127,10 @@ const MatchData = () => {
     const handleChangeImageIdUploadOCR = async (e: any) => {
         const file = e.target.files[0];
         if (!file) return;
+        console.log(getExtension(file.name))
+        if (getExtension(file.name) === "heic") {
+            file.name.replace(/HEIC/g, 'jpg')
+        }
         const reader = new FileReader();
         reader.onloadend = () => {
             const imageDataUri = reader.result;
@@ -138,7 +142,7 @@ const MatchData = () => {
 
     useEffect(() => {
         convertImageToText();
-      }, [imagePath]);
+    }, [imagePath]);
 
     const convertImageToText = async () => {
         if (!imagePath) return;
@@ -148,16 +152,19 @@ const MatchData = () => {
         await (await worker).setParameters({
             tessedit_char_whitelist: '0123456789',
             preserve_interword_spaces: '0',
-          });
+        });
         setTextBoxValue(prevState => ({ ...prevState, imageId: "กำลังประมวลผล" }))
         setStatusId(true)
         const {
-          data: { text },
+            data: { text },
         } = await (await worker).recognize(imagePath);
         setTextBoxValue(prevState => ({ ...prevState, imageId: text }))
         setStatusId(false)
-      };
+    };
 
+    const getExtension = (filename:any) => {
+        return filename.split('.').pop()
+    }
 
     return (
         <div>
