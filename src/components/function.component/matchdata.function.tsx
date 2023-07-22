@@ -4,7 +4,7 @@ const configValue: string | undefined = process.env.REACT_APP_API
 
 export const isImageIdIsValid = async (authtoken: any, imageId: String) => {
     return await axios.post(
-        configValue + "/data/dataisvalid/" + imageId,
+        configValue + "/data/search?search=" + imageId,
         {},
         {
             headers: {

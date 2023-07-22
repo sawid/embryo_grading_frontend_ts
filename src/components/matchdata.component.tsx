@@ -5,8 +5,30 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Tesseract, { createWorker } from 'tesseract.js';
 import { isImageIdIsValid, matchdata } from './function.component/matchdata.function';
+import { Typeahead } from 'react-bootstrap-typeahead';
+interface ImageData {
+    filePath: string;
+    grade: string | null;
+}
+
+interface DataItem {
+    professor: string;
+    year: string;
+    patient_name: string;
+    image_name: ImageData[];
+}
+
+
 
 const MatchData = () => {
+
+    const gradeOption = [
+        { label:'1-1-1' },
+        { label:'1-1-2' },
+        { label:'1-1-3' },
+        { label:'1-2-1' },
+        { label:'1-3-1' },
+    ];
 
     const { user } = useSelector((state: any) => ({ ...state }));
     const dispatch = useDispatch();
@@ -29,6 +51,14 @@ const MatchData = () => {
     });
 
     const [imagePath, setImagePath] = useState<any>('');
+
+    const [showSearchListRow, setShowSearchListRow] = useState(true);
+
+    const [showEmbryoDetail, setShowEmbryoDetail] = useState(true);
+
+    const [embryoList, setEmbryoList] = useState<DataItem[]>([]);
+
+    const [embryoDetailList, setEmbryoDetailList] = useState<DataItem>();
 
     const [ocr, setOcr] = useState("");
 
@@ -62,9 +92,10 @@ const MatchData = () => {
         isImageIdIsValid(user.token, textBoxValue.imageId)
             .then((res: any) => {
                 console.log(res.data)
-                if (res.data == true) {
-                    setStatusId(true);
-                    setStatusState2Id(false);
+                if (res.data) {
+                    // setStatusId(true);
+                    // setStatusState2Id(false);
+                    setEmbryoList(res.data);
                     toast.success('ค้นหาสำเร็จ !', {
                         position: "top-right",
                         autoClose: 1000,
@@ -76,7 +107,7 @@ const MatchData = () => {
                 }
                 else {
                     setTextBoxValue(prevState => ({ ...prevState, imageId: "" }))
-                    toast.error('ไม่มีไอดีนี้ !', {
+                    toast.error('ไม่พบชื่อนี้ !', {
                         position: "top-right",
                         autoClose: 1000,
                         hideProgressBar: false,
@@ -91,6 +122,33 @@ const MatchData = () => {
                 console.log(err.data)
             })
     }
+
+    const [selectedDropDownOption, setSelectedDropDownOption] = useState<any[]>([]);
+
+    const handleDropDownChange = (selected: any[]) => {
+        setSelectedDropDownOption(selected);
+    };
+
+    const getEmbryoDetail = (e: any, data: any) => {
+        e.preventDefault();
+        setEmbryoDetailList(data);
+        setShowSearchListRow(false);
+    }
+
+    const handleChangeImageNameGrade = (
+        e: any,
+        index: number
+    ) => {
+        const { value } = e.target;
+        setEmbryoDetailList((prevState: any) => {
+            if (!prevState) return null;
+            const updatedImageName = prevState.image_name.map((image: any, i: number) =>
+                i === index ? { ...image, grade: value } : image
+            );
+            return { ...prevState, image_name: updatedImageName };
+        });
+        console.log(embryoDetailList);
+    };
 
     const matchData = (e: any) => {
         e.preventDefault();
@@ -163,7 +221,7 @@ const MatchData = () => {
         setStatusId(false)
     };
 
-    const getExtension = (filename:any) => {
+    const getExtension = (filename: any) => {
         return filename.split('.').pop()
     }
 
@@ -180,11 +238,8 @@ const MatchData = () => {
                         <Alert key={"success"} variant={"success"}>
                             <Form >
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Label>รหัสของรูป (Case ID) ทดลอง  21435643 {ocr}</Form.Label>
-                                    <Form.Control name='imageId' value={textBoxValue.imageId} type="text" placeholder="รหัส" disabled={statusId} onChange={handleChangeImageId} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Control type="file" accept='.jpg,.png' onChange={handleChangeImageIdUploadOCR} />
+                                    <Form.Label>ชื่อของผู้รับการรักษา</Form.Label>
+                                    <Form.Control name='imageId' value={textBoxValue.imageId} type="text" placeholder="กรอกชื่อ" disabled={statusId} onChange={handleChangeImageId} />
                                 </Form.Group>
 
                                 <Button variant="primary" type="submit" disabled={statusId} onClick={checkImageIdIsValid}>
@@ -194,26 +249,110 @@ const MatchData = () => {
                         </Alert>
                     </Col>
                 </Row>
-                <Row className="justify-content-center text-center">
-                    <Col md="auto" sm="auto" xs="auto">
-                        <Alert key={"success"} variant={"success"}>
-                            <Form >
-                                <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Label>ชื่อของรูปใน Folder <br></br> ตามด้วยนามสกุลไฟล์ (เช่น day5.jpg) ตัวเล็ก-ใหญ่สำคัญ​ !!!</Form.Label>
-                                    <Form.Control name='imageName' type="string" placeholder="ชื่อ" value={textBoxValue.imageName} disabled={statusState2Id} onChange={handleChangeImageId} required />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Label>Grade</Form.Label>
-                                    <Form.Control name='grade' type="number" placeholder="เกรดเด้อ" value={textBoxValue.grade} maxLength={3} disabled={statusState2Id} onChange={handleChangeImageId} required />
-                                </Form.Group>
+                {
+                    showSearchListRow && (
+                        <Row className="justify-content-center text-center">
+                            {
+                                embryoList.map((element, index) => (
+                                    <Col md="auto" sm="auto" xs="auto">
+                                        <Alert key={"success"} variant={"success"}>
+                                            <Form >
+                                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                                    <Form.Label>ชื่อของผู้รับการรักษา</Form.Label>
+                                                    <Form.Control value={element.patient_name} type="text" placeholder="ชื่ออาจารย์" disabled={true} />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                                    <Form.Label>ชื่ออาจารย์</Form.Label>
+                                                    <Form.Control value={element.professor} type="text" placeholder="ชื่ออาจารย์" disabled={true} />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                                    <Form.Label>ปีของเคส</Form.Label>
+                                                    <Form.Control value={element.year} type="text" placeholder="ชื่ออาจารย์" disabled={true} />
+                                                </Form.Group>
 
-                                <Button variant="primary" type="submit" disabled={statusState2Id} onClick={matchData}>
-                                    บันทึก
-                                </Button>
-                            </Form>
-                        </Alert>
-                    </Col>
-                </Row>
+                                                <Button variant="primary" type="submit" disabled={statusId} onClick={(e) => getEmbryoDetail(e, element)}>
+                                                    เลือกเคสนี้ !
+                                                </Button>
+                                            </Form>
+                                        </Alert>
+                                    </Col>
+                                )
+
+                                )
+                            }
+                        </Row>
+                    )
+                }
+                {
+                    showEmbryoDetail && (
+                        <Row className="justify-content-center text-center">
+                            <Col md="12" sm="12" xs="12">
+                                <Row className="justify-content-center text-center">
+                                    <Col md="3" sm="auto" xs="auto">
+                                        <Alert key={"success"} variant={"success"}>
+                                            <Form>
+                                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                                    <Form.Label>ชื่อของผู้รับการรักษา</Form.Label>
+                                                    <Form.Control value={embryoDetailList?.patient_name} type="text" placeholder="ชื่ออาจารย์" disabled={true} />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                                    <Form.Label>ชื่ออาจารย์</Form.Label>
+                                                    <Form.Control value={embryoDetailList?.professor} type="text" placeholder="ชื่ออาจารย์" disabled={true} />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                                    <Form.Label>ปีของเคส</Form.Label>
+                                                    <Form.Control value={embryoDetailList?.year} type="text" placeholder="ชื่ออาจารย์" disabled={true} />
+                                                </Form.Group>
+
+                                            </Form>
+                                        </Alert>
+                                    </Col>
+                                </Row>
+                            </Col>
+                            {
+                                embryoDetailList?.image_name.map((element, index) => (
+                                    <Col md="auto" sm="auto" xs="auto">
+                                        <Alert key={"success"} variant={"success"}>
+                                            <Form>
+                                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                                    <Form.Label>ชื่อของรูปใน Folder <br></br></Form.Label>
+                                                    <Form.Control name='imageName' type="string" placeholder="ชื่อ" value={element.filePath} disabled={statusState2Id} onChange={handleChangeImageId} required />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                                    <Form.Label>Grade</Form.Label>
+                                                    <Form.Control name='grade' type="text" placeholder="เกรดเด้อ" value={element.grade == "None" ? '' : (element.grade ?? '')} disabled={false} onChange={e => handleChangeImageNameGrade(e, index)} required />
+                                                </Form.Group>
+
+                                                <div>
+                                                    {/* <h3>Searchable Select</h3> */}
+                                                    <Typeahead
+                                                        id="searchable-select"
+                                                        
+                                                        options={gradeOption}
+                                                        onChange={e => handleChangeImageNameGrade(e, index)}
+                                                        selected={element.grade ? [{ label: element.grade }] : []}
+                                                        labelKey="label"
+                                                        placeholder="Select an option..."
+                                                    />
+                                                    {selectedDropDownOption.length > 0 && (
+                                                        <div>
+                                                            <p>Selected Option: {selectedDropDownOption[0].label}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* <Button variant="primary" type="submit" disabled={statusState2Id} onClick={matchData}>
+                                                    บันทึก
+                                                </Button> */}
+                                            </Form>
+                                        </Alert>
+                                    </Col>
+                                ))
+                            }
+
+                        </Row>
+                    )
+                }
                 <Row className="justify-content-center text-center">
                     <Col md="auto" sm="auto" xs="auto">
                         <Button variant="primary" onClick={logout}>Logout</Button>
