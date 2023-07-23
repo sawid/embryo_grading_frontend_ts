@@ -23,11 +23,11 @@ interface DataItem {
 const MatchData = () => {
 
     const gradeOption = [
-        { label:'1-1-1' },
-        { label:'1-1-2' },
-        { label:'1-1-3' },
-        { label:'1-2-1' },
-        { label:'1-3-1' },
+        { label: '1-1-1' },
+        { label: '1-1-2' },
+        { label: '1-1-3' },
+        { label: '1-2-1' },
+        { label: '1-3-1' },
     ];
 
     const { user } = useSelector((state: any) => ({ ...state }));
@@ -52,9 +52,9 @@ const MatchData = () => {
 
     const [imagePath, setImagePath] = useState<any>('');
 
-    const [showSearchListRow, setShowSearchListRow] = useState(true);
+    const [showSearchListRow, setShowSearchListRow] = useState(false);
 
-    const [showEmbryoDetail, setShowEmbryoDetail] = useState(true);
+    const [showEmbryoDetail, setShowEmbryoDetail] = useState(false);
 
     const [embryoList, setEmbryoList] = useState<DataItem[]>([]);
 
@@ -96,6 +96,7 @@ const MatchData = () => {
                     // setStatusId(true);
                     // setStatusState2Id(false);
                     setEmbryoList(res.data);
+                    setShowSearchListRow(true);
                     toast.success('ค้นหาสำเร็จ !', {
                         position: "top-right",
                         autoClose: 1000,
@@ -133,6 +134,7 @@ const MatchData = () => {
         e.preventDefault();
         setEmbryoDetailList(data);
         setShowSearchListRow(false);
+        setShowEmbryoDetail(true);
     }
 
     const handleChangeImageNameGrade = (
@@ -152,10 +154,16 @@ const MatchData = () => {
 
     const matchData = (e: any) => {
         e.preventDefault();
-        matchdata(user.token, textBoxValue)
+        embryoDetailList?.image_name.forEach(element => {
+            var dataBody = {
+                imageName: element.filePath,
+                grade: element.grade
+            }
+            matchdata(user.token, dataBody)
             .then((res: any) => {
                 setStatusId(false);
                 setStatusState2Id(true);
+                setShowEmbryoDetail(false);
                 setTextBoxValue({
                     imageId: "",
                     imageName: "",
@@ -180,6 +188,8 @@ const MatchData = () => {
                     progress: undefined,
                 });
             })
+        });
+        
     }
 
     const handleChangeImageIdUploadOCR = async (e: any) => {
@@ -322,12 +332,54 @@ const MatchData = () => {
                                                     <Form.Label>Grade</Form.Label>
                                                     <Form.Control name='grade' type="text" placeholder="เกรดเด้อ" value={element.grade == "None" ? '' : (element.grade ?? '')} disabled={false} onChange={e => handleChangeImageNameGrade(e, index)} required />
                                                 </Form.Group>
-
-                                                <div>
-                                                    {/* <h3>Searchable Select</h3> */}
+                                                <Form.Select name='grade' aria-label="Default select example" value={element.grade == "None" ? '' : (element.grade ?? '')} onChange={e => handleChangeImageNameGrade(e, index)}>
+                                                    <option value="None">เลือกเกรด</option>
+                                                    <option value="1-1-1">1-1-1</option>
+                                                    <option value="1-1-2">1-1-2</option>
+                                                    <option value="1-1-3">1-1-3</option>
+                                                    <option value="1-2-1">1-2-1</option>
+                                                    <option value="1-2-2">1-2-2</option>
+                                                    <option value="1-2-3">1-2-3</option>
+                                                    <option value="1-3-1">1-3-1</option>
+                                                    <option value="1-3-2">1-3-2</option>
+                                                    <option value="1-3-3">1-3-3</option>
+                                                    <option value="2-1-1">2-1-1</option>
+                                                    <option value="2-1-2">2-1-2</option>
+                                                    <option value="2-1-3">2-1-3</option>
+                                                    <option value="2-2-1">2-2-1</option>
+                                                    <option value="2-2-2">2-2-2</option>
+                                                    <option value="2-2-3">2-2-3</option>
+                                                    <option value="2-3-1">2-3-1</option>
+                                                    <option value="2-3-2">2-3-2</option>
+                                                    <option value="2-3-3">2-3-3</option>
+                                                    <option value="3-1-1">3-1-1</option>
+                                                    <option value="3-1-2">3-1-2</option>
+                                                    <option value="3-1-3">3-1-3</option>
+                                                    <option value="3-2-1">3-2-1</option>
+                                                    <option value="3-2-2">3-2-2</option>
+                                                    <option value="3-2-3">3-2-3</option>
+                                                    <option value="3-3-1">3-3-1</option>
+                                                    <option value="3-3-2">3-3-2</option>
+                                                    <option value="3-3-3">3-3-3</option>
+                                                    <option value="4-1-1">4-1-1</option>
+                                                    <option value="4-1-2">4-1-2</option>
+                                                    <option value="4-1-3">4-1-3</option>
+                                                    <option value="4-2-1">4-2-1</option>
+                                                    <option value="4-2-2">4-2-2</option>
+                                                    <option value="4-2-3">4-2-3</option>
+                                                    <option value="4-3-1">4-3-1</option>
+                                                    <option value="4-3-2">4-3-2</option>
+                                                    <option value="4-3-3">4-3-3</option>
+                                                    <option value="Early">Early</option>
+                                                    <option value="Arrested">Arrested</option>
+                                                    <option value="Morula">Morula</option>
+                                                    <option value="Hatched">Hatched</option>
+                                                    <option value="HatchedBiopsy">HatchedBiopsy</option>
+                                                </Form.Select>
+                                                {/* <div>
                                                     <Typeahead
                                                         id="searchable-select"
-                                                        
+
                                                         options={gradeOption}
                                                         onChange={e => handleChangeImageNameGrade(e, index)}
                                                         selected={element.grade ? [{ label: element.grade }] : []}
@@ -339,7 +391,7 @@ const MatchData = () => {
                                                             <p>Selected Option: {selectedDropDownOption[0].label}</p>
                                                         </div>
                                                     )}
-                                                </div>
+                                                </div> */}
 
                                                 {/* <Button variant="primary" type="submit" disabled={statusState2Id} onClick={matchData}>
                                                     บันทึก
@@ -349,11 +401,20 @@ const MatchData = () => {
                                     </Col>
                                 ))
                             }
+                            <Row className="justify-content-center text-center">
+                                <Col md="auto" sm="auto" xs="auto">
+                                    <Button variant="primary" type="submit" disabled={false} onClick={matchData}>
+                                        บันทึก
+                                    </Button>
+                                </Col>
+                            </Row>
+
+
 
                         </Row>
                     )
                 }
-                <Row className="justify-content-center text-center">
+                <Row className="justify-content-center mt-4 text-center">
                     <Col md="auto" sm="auto" xs="auto">
                         <Button variant="primary" onClick={logout}>Logout</Button>
                     </Col>
