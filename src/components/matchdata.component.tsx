@@ -92,7 +92,7 @@ const MatchData = () => {
         isImageIdIsValid(user.token, textBoxValue.imageId)
             .then((res: any) => {
                 console.log(res.data)
-                if (res.data) {
+                if (res.data && res.data.length > 0) {
                     // setStatusId(true);
                     // setStatusState2Id(false);
                     setEmbryoList(res.data);
@@ -330,7 +330,7 @@ const MatchData = () => {
                                                 </Form.Group>
                                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                                     <Form.Label>Grade</Form.Label>
-                                                    <Form.Control name='grade' type="text" placeholder="เกรดเด้อ" value={element.grade == "None" ? '' : (element.grade ?? '')} disabled={false} onChange={e => handleChangeImageNameGrade(e, index)} required />
+                                                    <Form.Control name='grade' type="text" placeholder="เกรดเด้อ" value={element.grade == "None" ? '' : (element.grade ?? '')} disabled={true} onChange={e => handleChangeImageNameGrade(e, index)} required />
                                                 </Form.Group>
                                                 <Form.Select name='grade' aria-label="Default select example" value={element.grade == "None" ? '' : (element.grade ?? '')} onChange={e => handleChangeImageNameGrade(e, index)}>
                                                     <option value="None">เลือกเกรด</option>
