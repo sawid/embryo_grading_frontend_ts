@@ -6,6 +6,8 @@ import { toast } from 'react-toastify';
 import Tesseract, { createWorker } from 'tesseract.js';
 import { isImageIdIsValid, matchdata } from './function.component/matchdata.function';
 import { Typeahead } from 'react-bootstrap-typeahead';
+import Image from "react-bootstrap/Image";
+import CroppedImage from './function.component/croppedImage.component';
 interface ImageData {
     filePath: string;
     grade: string | null;
@@ -18,7 +20,7 @@ interface DataItem {
     image_name: ImageData[];
 }
 
-
+const fileGetPath = 'http://localhost:3232/files'
 
 const MatchData = () => {
 
@@ -29,6 +31,10 @@ const MatchData = () => {
         { label: '1-2-1' },
         { label: '1-3-1' },
     ];
+
+
+
+    console.log("fileGetPath" + fileGetPath)
 
     const { user } = useSelector((state: any) => ({ ...state }));
     const dispatch = useDispatch();
@@ -160,36 +166,36 @@ const MatchData = () => {
                 grade: element.grade
             }
             matchdata(user.token, dataBody)
-            .then((res: any) => {
-                setStatusId(false);
-                setStatusState2Id(true);
-                setShowEmbryoDetail(false);
-                setTextBoxValue({
-                    imageId: "",
-                    imageName: "",
-                    grade: "",
+                .then((res: any) => {
+                    setStatusId(false);
+                    setStatusState2Id(true);
+                    setShowEmbryoDetail(false);
+                    setTextBoxValue({
+                        imageId: "",
+                        imageName: "",
+                        grade: "",
+                    })
+                    toast.success('บันทึกสำเร็จ !', {
+                        position: "top-right",
+                        autoClose: 1000,
+                        hideProgressBar: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
                 })
-                toast.success('บันทึกสำเร็จ !', {
-                    position: "top-right",
-                    autoClose: 1000,
-                    hideProgressBar: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            })
-            .catch((err: any) => {
-                toast.error('ไม่สำเร็จ !', {
-                    position: "top-right",
-                    autoClose: 1000,
-                    hideProgressBar: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            })
+                .catch((err: any) => {
+                    toast.error('ไม่สำเร็จ !', {
+                        position: "top-right",
+                        autoClose: 1000,
+                        hideProgressBar: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                })
         });
-        
+
     }
 
     const handleChangeImageIdUploadOCR = async (e: any) => {
@@ -207,6 +213,11 @@ const MatchData = () => {
         };
         reader.readAsDataURL(file);
     }
+
+    const getRelativeImagePath = (fullImagePath: string) => {
+        const basePath = '../test_image_set';
+        return fileGetPath ? encodeURI(fullImagePath.replace(basePath, fileGetPath)) : "";
+    };
 
     useEffect(() => {
         convertImageToText();
@@ -321,12 +332,21 @@ const MatchData = () => {
                             </Col>
                             {
                                 embryoDetailList?.image_name.map((element, index) => (
+
                                     <Col md="auto" sm="auto" xs="auto">
                                         <Alert key={"success"} variant={"success"}>
                                             <Form>
                                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                                     <Form.Label>ชื่อของรูปใน Folder <br></br></Form.Label>
                                                     <Form.Control name='imageName' type="string" placeholder="ชื่อ" value={element.filePath} disabled={statusState2Id} onChange={handleChangeImageId} required />
+                                                </Form.Group>
+                                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                                    {/* {<Image src={getRelativeImagePath(element.filePath)} rounded />} */}
+                                                    <CroppedImage
+                                                        src={getRelativeImagePath(element.filePath)}
+                                                        width={200}
+                                                        height={200}
+                                                    />
                                                 </Form.Group>
                                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                                     <Form.Label>Grade</Form.Label>
