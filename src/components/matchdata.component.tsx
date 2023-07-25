@@ -20,7 +20,7 @@ interface DataItem {
     image_name: ImageData[];
 }
 
-const fileGetPath = 'http://localhost:3232/files'
+const fileGetPath = 'https://3731-2403-6200-88a2-fcc7-ac77-b5a5-9b0d-d3ae.ngrok-free.app/files'
 
 const MatchData = () => {
 
